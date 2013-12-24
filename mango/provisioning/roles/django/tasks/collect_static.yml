@@ -1,0 +1,23 @@
+---
+
+- name: create Django folder for static/media
+  shell: mkdir /home/vagrant/mango creates=/home/vagrant/mango
+
+- name: create Django media files folder
+  shell: mkdir /home/vagrant/mango/media/ creates=/home/vagrant/mango/media/
+
+- name: create Django static files folder
+  shell: mkdir /home/vagrant/mango/static/ creates=/home/vagrant/mango/static/
+
+- name: collect Django static files
+  shell: python /vagrant/src/manage.py collectstatic --noinput
+  notify: service nginx start/enable
+
+- name: change ownership media and static folders
+  shell: chown -R vagrant:vagrant /home/vagrant/mango
+  notify: service nginx start/enable
+
+- name: change permissions media and static folders
+  shell: chmod -R 755 /home/vagrant/mango
+  notify: service nginx start/enable
+

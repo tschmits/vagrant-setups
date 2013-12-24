@@ -1,0 +1,30 @@
+---
+
+# Django install & Django packages install
+
+- name: install Django
+  pip: name=Django
+  notify: service uwsgi start/enable
+
+- name: install South
+  pip: name=South
+  notify: service uwsgi start/enable
+
+# - name: install DJANGO PACKAGE
+#   pip: name=PACAKGE
+#   notify: service uwsgi start/enable
+
+
+# dB creation
+
+- name: create core Django db tables via syncdb
+  shell: python /vagrant/src/manage.py syncdb --noinput --settings=mango.settings
+  notify: service uwsgi start/enable
+
+- name: migrate app Django db tables via South
+  shell: python /vagrant/src/manage.py migrate --noinput --settings=mango.settings
+  notify: service uwsgi start/enable
+
+- name: add initial data to Django db tables
+  shell: chdir=/vagrant/src/ python manage.py loaddata mango/fixtures/inital_data.json
+  notify: service uwsgi start/enable

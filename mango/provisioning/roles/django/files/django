@@ -1,0 +1,36 @@
+# nginx.conf
+upstream django {
+    # connect to this socket
+    server unix:///tmp/mango_uwsgi.sock;
+}
+
+server {
+    # the port your site will be served on
+    listen      80;
+    server_name localhost;
+
+    # logging
+    access_log /var/log/nginx/mango.access.log;
+    error_log /var/log/nginx/mango.error.log;
+
+    # charset
+    charset     utf-8;
+
+    #Max upload size
+    client_max_body_size 75M;
+
+    # Django media
+    location /media  {
+        alias /home/vagrant/mango/media;
+    }
+
+    location /static {
+        alias /home/vagrant/mango/static;
+    }
+
+    # Django server
+    location / {
+        uwsgi_pass django;
+        include    /etc/nginx/uwsgi_params;
+    }
+}

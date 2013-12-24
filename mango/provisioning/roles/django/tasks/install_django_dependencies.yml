@@ -1,0 +1,19 @@
+---
+- name: install http2lib
+  apt: pkg=python-httplib2 state=present
+
+- name: install deps
+  apt: pkg=$item state=present
+  with_items:
+    - python-psycopg2
+    - python-pip
+    - python-dev
+    - nginx
+    - uwsgi
+  notify: service nginx start/enable
+  tags:
+    - aptget
+
+- name: install uwsgi-python
+  pip: name=uwsgi state=present
+

@@ -1,0 +1,24 @@
+---
+- name: setup django conf for nginx
+  copy: src=django dest=/etc/nginx/sites-available/django mode=0644 owner=root group=root
+  notify: service nginx start/enable
+
+- name: symlink from sites enabled
+  shell: ln -s ../sites-available/django /etc/nginx/sites-enabled/django creates=/etc/nginx/sites-enabled/django
+  notify: service nginx start/enable
+
+- name: remove default enabled
+  file: path=/etc/nginx/sites-enabled/default state=absent
+  notify: service nginx start/enable
+
+- name: copy over uwsgi django.ini
+  copy: src=django.ini dest=/etc/nginx/django.ini
+  notify: service uwsgi start/enable
+
+- name: copy over uwsgi.conf
+  copy: src=uwsgi.conf dest=/etc/init/uwsgi.conf mode=0644 owner=root group=root
+  notify: service uwsgi start/enable
+
+- name: final service restart
+  service: name=nginx state=restarted enabled=yes
+  service: name=uwsgi state=restarted enabled=yes

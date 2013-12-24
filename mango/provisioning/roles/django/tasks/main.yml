@@ -1,0 +1,5 @@
+---
+- include: install_django_dependencies.yml
+- include: install_django.yml
+- include: collect_static.yml
+- include: configure_nginx_uwsgi.yml
